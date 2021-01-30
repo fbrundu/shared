@@ -9,4 +9,4 @@ ENV PATH="/opt/cellranger-5.0.1:${PATH}"
 
 WORKDIR /root
 
-CMD ["bash"]
+CMD [ "bash" ]
