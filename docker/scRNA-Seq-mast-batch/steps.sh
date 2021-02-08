@@ -36,6 +36,7 @@ echo "cdat: ${CDAT}"
 echo "mat: ${MAT}"
 echo "group ${GROUP}"
 echo "model ${MODEL}"
+echo "jobs ${JOBS}"
 
 ############################################################
 ## Download the data
@@ -50,7 +51,7 @@ aws s3 cp s3://${WORKSPACE}/${MAT} data/
 ## Run the script
 
 Rscript script.R \
-	data/${MAT} data/${CDAT} ${GROUP} ${MODEL} ${OUT_NAME} \
+	data/${MAT} data/${CDAT} ${GROUP} ${MODEL} ${OUT_NAME} ${JOBS} \
     > out.log 2> error.log
 
 ############################################################

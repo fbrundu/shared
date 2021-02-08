@@ -1,9 +1,12 @@
 rm(list=ls())
 library(MAST)
+library(Matrix)
 library(feather)
-options(mc.cores=1)
+library(parallel)
 
 cargs <- commandArgs(trailingOnly=TRUE)
+
+options(mc.cores=strtoi(cargs[6]))
 
 print(paste('Reading matrix', cargs[1], sep=' '))
 mat <- as.data.frame(read_feather(cargs[1]))
@@ -15,12 +18,17 @@ cdat <- read.csv(cargs[2], check.names=FALSE, row.names=1)
 fdat <- as.data.frame(colnames(mat))
 row.names(fdat) <- fdat[,1]
 
-raw <- FromMatrix(t(mat), cdat, fdat)
-rm(mat)
+# NOTE: dense matrix replaced with sparse matrix support
+# raw <- FromMatrix(t(mat), cdat, fdat)
+raw <- FromMatrix(list(et=Matrix(t(mat), sparse=TRUE)), cdat, fdat)
 
 de <- NULL
 print(paste('Testing', cargs[3], sep=' '))
 test <- cdat[,cargs[3]]
+
+rm(mat, fdat, cdat)
+gc()
+
 for (g in factor(sort(unique(test)))) {
     print(paste('Analyzing group', g, sep=' '))
     group <- test
@@ -35,6 +43,7 @@ for (g in factor(sort(unique(test)))) {
 
     print('Preparing results')
     summaryCond <- summary(zlmCond, doLRT=paste('group', g, sep=''))
+
     summaryDT <- summaryCond$datatable
     fcHurdle <- merge(
         summaryDT[
@@ -61,6 +70,8 @@ for (g in factor(sort(unique(test)))) {
     } else {
         de <- merge(de, g_de, by='primerid')
     }
+    rm(zlmCond, summaryCond, summaryDT, fcHurdle, g_de, group)
+    gc()
 }
 print(paste('Writing result', cargs[5], sep=' '))
 write.csv(de, file=cargs[5], quote=FALSE, row.names=FALSE)
