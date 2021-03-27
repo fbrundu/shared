@@ -1,7 +1,7 @@
 rm(list=ls())
 library(MAST)
 library(Matrix)
-library(feather)
+library(arrow)
 library(parallel)
 
 cargs <- commandArgs(trailingOnly=TRUE)

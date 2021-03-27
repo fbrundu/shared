@@ -20,7 +20,7 @@ RUN pip3 install -U awscli
 WORKDIR /home/ubuntu/
 
 RUN R -e "BiocManager::install('MAST')" 
-RUN R -e "install.packages('feather', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('arrow', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
 ############################################################
 
